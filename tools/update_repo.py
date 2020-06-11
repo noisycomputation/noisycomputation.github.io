@@ -6,7 +6,7 @@ import shutil
 import sys
 
 REPO_PATH = os.path.abspath(os.path.join('.', 'repo'))
-REPO_URL = 'https://github.com/noisycomputation/noisycomputation.github.io'
+REPO_URL = 'https://noisycomputation.github.io'
 
 
 def get_pkgname(pkgpath, normalized=True):

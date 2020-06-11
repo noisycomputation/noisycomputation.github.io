@@ -6,7 +6,8 @@ import shutil
 import sys
 
 REPO_PATH = os.path.abspath(os.path.join('.', 'repo'))
-REPO_URL = 'https://github.com/noisycomputation/noisycomputation.github.io/repo'
+REPO_URL = 'https://github.com/noisycomputation/noisycomputation.github.io'
+
 
 def get_pkgname(pkgpath, normalized=True):
     if pkgpath.endswith('.tar.gz'):
@@ -60,9 +61,8 @@ for package_file in new_packages:
     if not os.path.isdir(destination_dir_full):
         os.mkdir(destination_dir_full, mode=0o775)
 
-    print(
-        f"would copy {package_file} to {os.path.join(destination_dir_full, destination_basename)}"
-    )
+    print(f"copying {package_file}")
+    print(f"     to {os.path.join(destination_dir_full, destination_basename)}")
     shutil.copy(package_file, os.path.join(destination_dir_full, destination_basename))
 
 # regenerate repo index.html from scratch
@@ -87,7 +87,7 @@ pkg_names = os.listdir(REPO_PATH)
 
 main_index = generate_header("noisycomputation python repository")
 for pkg_name in os.listdir(REPO_PATH):
-    main_index += f'            <a href="{pkg_name}/">{pkg_name}</a>\n'
+    main_index += f'            <a href="{REPO_URL}/repo/{pkg_name}/">{pkg_name}</a><br/>\n'
 
     package_index = generate_header(f"{pkg_name}")
     package_files = [
@@ -95,14 +95,13 @@ for pkg_name in os.listdir(REPO_PATH):
         if x.endswith('.tar.gz') or x.endswith('.whl')
     ]
     for package_file in package_files:
-        #import code
-        #code.interact(banner=None, exitmsg=None, local=dict(globals(), **locals()))
         package_file_fullpath = os.path.join(REPO_PATH, pkg_name, package_file)
         file_hash = sha256_digest(package_file_fullpath)
-        package_index += (
-            f'            <a href="{REPO_URL}/{pkg_name}/{package_file}#sha256={file_hash}">'
-            f'{pkg_name}</a>\n'
+        package_entry = (
+            f'            <a href="{REPO_URL}/repo/{pkg_name}/{package_file}#sha256={file_hash}">'
+            f'{package_file}</a><br/>\n'
         )
+        package_index += package_entry
     package_index += f'''    </div>
   </body>
 </html>

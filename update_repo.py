@@ -5,8 +5,9 @@ import re
 import shutil
 import sys
 
-REPO_PATH = os.path.abspath(os.path.join('.', 'repo'))
+REPO_PATH = os.path.abspath('.')
 REPO_URL = 'https://noisycomputation.github.io'
+IGNORE_TOPLEVEL_REGEX = r'|'.join(['^\..*', 'index.html', 'update_repo.py'])
 
 
 def get_pkgname(pkgpath, normalized=True):
@@ -87,7 +88,13 @@ pkg_names = os.listdir(REPO_PATH)
 
 main_index = generate_header("noisycomputation python repository")
 for pkg_name in os.listdir(REPO_PATH):
-    main_index += f'            <a href="{REPO_URL}/repo/{pkg_name}/">{pkg_name}</a><br/>\n'
+    if (
+        re.match(IGNORE_TOPLEVEL_REGEX, pkg_name) or
+        not os.path.isdir(os.path.join(REPO_PATH, pkg_name))
+    ):
+        continue
+
+    main_index += f'            <a href="{REPO_URL}/{pkg_name}/">{pkg_name}</a><br/>\n'
 
     package_index = generate_header(f"{pkg_name}")
     package_files = [
@@ -98,7 +105,7 @@ for pkg_name in os.listdir(REPO_PATH):
         package_file_fullpath = os.path.join(REPO_PATH, pkg_name, package_file)
         file_hash = sha256_digest(package_file_fullpath)
         package_entry = (
-            f'            <a href="{REPO_URL}/repo/{pkg_name}/{package_file}#sha256={file_hash}">'
+            f'            <a href="{REPO_URL}/{pkg_name}/{package_file}#sha256={file_hash}">'
             f'{package_file}</a><br/>\n'
         )
         package_index += package_entry
